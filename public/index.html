@@ -12,7 +12,6 @@
     }
     section {
       padding: 30px 0;
-      min-height: 300px;
     }
     pre {
       margin: 20px 0;
@@ -30,16 +29,27 @@
       $('#logout-button').click(function () {
         navigator.id.logout();
       });
+      var pretty_print = function (json_string) {
+        var json = JSON.parse(json_string);
+        return JSON.stringify(json, null, 2);
+      }
       navigator.id.watch({
         onlogin: function(assertion) {
           console.info('Logged-in: ', assertion);
           $('#assertion').text(assertion);
+          var segment = assertion.split(".");
+          var header = atob(segment[0]);
+          var payload = atob(segment[1]);
+          $('#header').text(pretty_print(header));
+          $('#payload').text(pretty_print(payload));
           $('#login-button').hide();
           $('#logout-button').show();
         },
         onlogout: function() {
           console.info('Logged-out');
           $('#assertion').text('Assertion will be rendered here.');
+          $('#header').text('Header JSON will be rendered here.');
+          $('#payload').text('Payload JSON will be rendered here.');
           $('#login-button').show();
           $('#logout-button').hide();
         }
@@ -70,9 +80,22 @@
       <div class="row">
         <div class="span12">
           <section>
-            <a id="login-button" class="btn btn-success btn-large" href="#">Login</a>
-            <a id="logout-button" class="btn btn-danger btn-large" href="#">Logout</a>
-            <pre id="assertion"></pre>
+            <nav>
+              <a id="login-button" class="btn btn-success btn-large" href="#">Login</a>
+              <a id="logout-button" class="btn btn-danger btn-large" href="#">Logout</a>
+            </nav>
+            <article>
+              <h3>Raw Assertion</h2>
+              <pre id="assertion"></pre>
+            </article>
+            <article>
+              <h3>Header</h2>
+              <pre id="header"></pre>
+            </article>
+            <article>
+              <h3>Payload</h2>
+              <pre id="payload"></pre>
+            </article>
           </section>
         </div>
       </div>
